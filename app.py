@@ -8,9 +8,9 @@ from elg.model.base import StandardMessages
 
 class SamiChecker(FlaskService):
 
-    available_pipes = [
-        'smegramrelease', 'smegram', 'smespell', 'smegram-nospell'
-    ]
+    available_pipes = ['smegramrelease', 'smegram']
+    max_char = 4095
+    min_char = 2
 
     def check_params(self, request):
         params = request.params
@@ -23,9 +23,24 @@ class SamiChecker(FlaskService):
             return False
         return pipe
 
+    def check_text(self, text):
+        if len(text) < self.min_char:
+            tooShortMessage = StandardMessages.generate_elg_request_invalid(
+                detail={'text': 'lower limit is 2 characters in length'})
+            return False, Failure(errors=[tooShortMessage])
+        elif len(text) > self.max_char:
+            tooLargeMessage = StandardMessages.generate_elg_request_too_large()
+            return False, Failure(errors=[tooLargeMessage])
+        else:
+            return True, text
+
     def process_text(self, request: TextRequest):
 
         text = request.content
+        text_ok, text_check_res = self.check_text(text)
+        if not text_ok:
+            return text_check_res
+
         pipe = self.check_params(request)
         if not pipe:
             # missing parameter

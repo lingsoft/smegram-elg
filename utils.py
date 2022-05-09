@@ -19,20 +19,6 @@ def runcmd(command):
     return ret
 
 
-def gmr_func(text, pipe):
-    """
-    :param text: str
-    :return
-    """
-    res_str = runcmd("echo \"%s\" \
-                    | divvun-checker -s se/pipespec.xml -n %s" %
-                     (text, pipe)).stdout
-    if res_str == "":
-        return None
-    res = json.loads(res_str)
-    return res
-
-
 def gmr_func_elg(text, pipe):
     """
     :param text: str
@@ -41,9 +27,12 @@ def gmr_func_elg(text, pipe):
     res_str = runcmd("echo \"%s\" \
                     | divvun-checker -s se/pipespec.xml -n %s" %
                      (text, pipe)).stdout
-    if res_str == "":
-        return TextsResponseObject()
+    # print('original res_str', res_str)
+    if not res_str:
+        raise Exception('Internal error')
+
     res = json.loads(res_str)
+    # print('res from native util', res)
     content = res['text']
     errs = res['errs']
     annos = []
@@ -58,10 +47,3 @@ def gmr_func_elg(text, pipe):
                            "suggestion": e[5]
                        }))
     return TextsResponseObject(content=content, annotations={"errs": annos})
-
-
-# if __name__ == '__main__':
-#     import sys
-#     text = sys.argv[1]
-#     pipe = sys.argv[2]
-#     print(gmr_func(text, pipe))

@@ -2,7 +2,7 @@
 
 This git repository contains [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html) Flask based REST API for the Sami speller and checker.
 
-[lang-sme](https://github.com/giellalt/lang-sme) contains finite state source files for the North Sami language, for building morphological analysers, proofing tools and dictionaries. It is published under GPL-3.0 License.
+[lang-sme](https://github.com/giellalt/lang-sme) contains finite state source files for the North Sami language, for building morphological analyzers, proofing tools, and dictionaries. It is published under GPL-3.0 License.
 Original authors are from [GiellaLT](https://giellalt.uit.no). More info can be found in this [paper](https://ep.liu.se/ecp/168/008/ecp19168008.pdf)
 
 This ELG API was developed in EU's CEF project: [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
@@ -24,6 +24,12 @@ python3 -m pip install -r requirements.txt
 Run the development mode flask app
 ```
 FLASK_ENV=development flask run --host 0.0.0.0 --port 8000
+```
+
+## Running tests
+
+```
+python3 -m unittest  -v
 ```
 
 ## Building the docker image
@@ -70,16 +76,17 @@ For text request
 }
 ```
 
-Property `params` contains {"pipe": "valid_pipe"} where `valid_pipe` are one of four supported pre-defined pipelines: 
+Property `params` contains {"pipe": "valid_pipe"} where `valid_pipe` are one of two supported pre-defined pipelines: 
 - smegramrelease : Spelling and grammar error
 - smegram : Spelling and grammar error with a after-speller-disambiguator
-- smespell : Spelling errors only
-- smegram-nospell : Grammar error without spellchecking
+
+The value of property content should not exceed 4095 characters in length. The number 4095 was selected based on empirical experiments on the maximum sentence length the pipeline can handle.  
+
 
 #### RESPONSE
 
 Text response
-```json
+```
 {
   "response":{
     "type":"texts",
@@ -107,12 +114,12 @@ Text response
 
 ### Response structure
 
-The array-of-arrays `errs` has one array per error. Within each error-array:
+The array-of-arrays `errs` has one array per error. Within each error array:
 - `original` is the original text that is detected
 - `start`/`end` are offsets in text
 - `type` is the (internal) error type
 - `explanation` is the human-readable explanation
-- `suggetionss` is a list of possible suggestions for replacement of the `original` text in the content.
+- `suggestion` is a list of possible suggestions for replacement of the `original` text in the content.
 
 ### Example call
 
