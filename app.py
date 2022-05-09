@@ -14,10 +14,11 @@ class SamiChecker(FlaskService):
 
     def check_params(self, request):
         params = request.params
+        default_pipe = self.available_pipes[1]
         if not params:
-            return False
+            return default_pipe
         if 'pipe' not in params:
-            return False
+            return default_pipe
         pipe = params['pipe']
         if pipe not in self.available_pipes:
             return False
@@ -46,7 +47,7 @@ class SamiChecker(FlaskService):
             # missing parameter
             detail = {
                 'params':
-                f'no given params or invalid params, support pipes are: {self.available_pipes}'
+                f'invalid params, support pipes are: {self.available_pipes}'
             }
             missingRequestMsg = StandardMessages.generate_elg_request_missing(
                 detail=detail)

@@ -46,6 +46,26 @@ class TestResponse(unittest.TestCase):
                                  data=self.payload).json()['response']
         self.assertEqual(response.get('type'), 'texts')
 
+    def test_api_response_when_no_given_param(self):
+        """API should work with default pipeline
+        when there is no pipeline in params
+        """
+
+        payload_dict = {"type": "text", "content": self.base_text[0]}
+        payload = json.dumps(payload_dict)
+        response = requests.post(self.base_url,
+                                 headers=self.headers,
+                                 data=payload).json()['response']['texts'][0]
+
+        self.assertIn('errs', response['annotations'])
+
+        for _ in ['start', 'end', 'features']:
+            self.assertIn(_, response['annotations']['errs'][0])
+
+        for prop in ['original', 'type', 'explanation', 'suggestion']:
+
+            self.assertIn(prop, response['annotations']['errs'][0]['features'])
+
     def test_api_response_content(self):
         """Should return correct content with two
         different grammar check pipelines

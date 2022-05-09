@@ -76,11 +76,11 @@ For text request
 }
 ```
 
-Property `params` contains {"pipe": "valid_pipe"} where `valid_pipe` are one of two supported pre-defined pipelines: 
+Property `params` (optional) contains {"pipe": "valid_pipe"} where `valid_pipe` (default is `smegram`) is one of two supported pre-defined pipelines: 
 - smegramrelease : Spelling and grammar error
 - smegram : Spelling and grammar error with a after-speller-disambiguator
 
-The value of property content should not exceed 4095 characters in length. The number 4095 was selected based on empirical experiments on the maximum sentence length the pipeline can handle.  
+The value of property content should be in range [2:4095] characters in length. The number 4095 was selected based on empirical experiments on the maximum sentence length the pipeline can handle.  
 
 
 #### RESPONSE
