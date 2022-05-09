@@ -1,6 +1,8 @@
 import subprocess
 import json
 
+import unicodedata
+
 from elg.model import TextsResponseObject
 from elg.model.base import Annotation
 
@@ -19,11 +21,19 @@ def runcmd(command):
     return ret
 
 
+# Remove control characters from a string:
+def remove_control_characters(s):
+    return "".join(ch for ch in s if unicodedata.category(ch)[0] != "C")
+
+
 def gmr_func_elg(text, pipe):
     """
     :param text: str
     :return
     """
+    text = remove_control_characters(
+        text.replace("\r", "").replace("\n", " ").replace("\t", " ").replace(
+            "\u2028", " ").replace("\u2029", " "))
     res_str = runcmd("echo \"%s\" \
                     | divvun-checker -s se/pipespec.xml -n %s" %
                      (text, pipe)).stdout

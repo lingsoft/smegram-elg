@@ -1,9 +1,10 @@
-from distutils import errors
 import utils
 from elg import FlaskService
 from elg.model import Failure
 from elg.model import TextsResponse, TextRequest
 from elg.model.base import StandardMessages
+
+import re
 
 
 class SamiChecker(FlaskService):
@@ -37,7 +38,8 @@ class SamiChecker(FlaskService):
 
     def process_text(self, request: TextRequest):
 
-        text = request.content
+        text = request.content.strip()
+        text = re.sub(r'(\n\s*)+\n+', '\n', text)
         text_ok, text_check_res = self.check_text(text)
         if not text_ok:
             return text_check_res

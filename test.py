@@ -171,53 +171,27 @@ class TestResponse(unittest.TestCase):
         self.assertEqual(response['failure']['errors'][0]['code'],
                          'elg.request.invalid')
 
-    # def test_api_response_with_large_request(self):
-    #     """Should return correct response when submitting
-    #     a request with nearly 15000-char length.
-    #     """
-    #     large_text = '. '.join(self.base_text * 1000)
-    #     # assert len(large_text) >= 15000, 'text is not large enough'
-    #     print(f'len of text: {len(large_text)}')
-    #     payload_dict = {
-    #         "type": "text",
-    #         "params": self.params,
-    #         "content": large_text
-    #     }
-    #     payload = json.dumps(payload_dict)
-    #     # print(payload)
+    def test_api_response_when_content_has_newlines(self):
+        """API should work even when there are
+        many newlines and special characters
+        in the content
+        """
 
-    #     # response = requests.post(self.base_url,
-    #     #                          headers=self.headers,
-    #     #                          data=payload).json()['response']['texts'][0]
-    #     response = requests.post(self.base_url,
-    #                              headers=self.headers,
-    #                              data=payload).json()
+        content = self.base_text[0] + '\n\n?+-\n\nhello\n'
+        payload_dict = {"type": "text", "content": content}
+        payload = json.dumps(payload_dict)
+        response = requests.post(self.base_url,
+                                 headers=self.headers,
+                                 data=payload).json()['response']['texts'][0]
 
-    #     # self.assertIn('errs', response['annotations'])
-    #     # for prop in [
-    #     #         'original', 'start', 'end', 'type', 'explanation',
-    #     #         'suggestions'
-    #     # ]:
-    #     #     self.assertIn(prop, response['annotations']['errs'][0])
+        self.assertIn('errs', response['annotations'])
 
-    # def test_api_response_with_very_large_request(self):
-    #     """Should return invalid request prompt
-    #     """
+        for _ in ['start', 'end', 'features']:
+            self.assertIn(_, response['annotations']['errs'][0])
 
-    #     large_text = '. '.join(self.base_text * 1000)
-    #     payload_dict = {
-    #         "type": "text",
-    #         "params": self.params,
-    #         "content": large_text[:4095]
-    #     }
-    #     payload = json.dumps(payload_dict)
-    #     response = requests.post(self.base_url,
-    #                              headers=self.headers,
-    #                              data=payload).json()
-    #     print(response)
-    #     self.assertIn('failure', response)
-    #     self.assertEqual(response['failure']['errors'][0]['code'],
-    #                      'elg.request.invalid')
+        for prop in ['original', 'type', 'explanation', 'suggestion']:
+
+            self.assertIn(prop, response['annotations']['errs'][0]['features'])
 
 
 if __name__ == '__main__':
