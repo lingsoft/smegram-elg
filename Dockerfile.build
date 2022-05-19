@@ -1,0 +1,42 @@
+FROM ubuntu:20.04
+
+# Install basic deps
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Helsinki
+
+RUN apt-get update \
+    && apt-get install -y python3.8 zip git wget bc gawk autoconf subversion pkg-config build-essential python3.8-venv locales && \
+    locale-gen en_US.UTF-8
+
+# Set this var or raise error
+ENV LC_ALL en_US.UTF-8
+
+# Install giella specified deps
+RUN wget https://apertium.projectjj.com/apt/install-nightly.sh && bash install-nightly.sh
+RUN apt-get update && apt-get install -y divvun-gramcheck hfst cg3
+
+# Download the project
+WORKDIR /home
+
+RUN svn checkout https://github.com/giellalt/lang-sme.git/trunk lang-sme
+
+RUN cd lang-sme && \
+    ./autogen.sh && \
+    ./autogen.sh
+
+RUN cd giella-shared && \
+    ./autogen.sh && \
+    ./configure && \
+    make
+
+RUN cd giella-core && \
+    ./autogen.sh && \
+    ./configure && \
+    make
+
+RUN cd lang-sme && \
+    ./configure --enable-apertium --with-hfst --enable-syntax --enable-grammarchecker --enable-tokenisers --enable-alignment --enable-reversed-intersect && \
+    make
+
+CMD bash
+

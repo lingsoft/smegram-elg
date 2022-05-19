@@ -9,10 +9,54 @@ This ELG API was developed in EU's CEF project: [Microservices at your service](
 
 ## Local development
 
+### Building the tool from source
+
+The grammar tool can be built from source as described in the `Dockerfile.build`. To run it, at least 8GB memory is required.
+```
+docker build -f Dockerfile.build -t lang-sme .
+```
+
+Then run the container and copy the zcheck file from the container
+```
+docker run --name -it -d sme-src lang-sme 
+docker cp lang-sme:/home/lang-sme/tools/grammarcheckers/se.zcheck
+```
+
+### Use the pre-built `se.zip` file
+
 The grammar tool is packed in the se.zip file, extracting the file
 ```
 unzip se.zip && rm se.zip
 ```
+
+The tool is located inside the directory `se` and instant test can be done likes
+```
+cd se
+echo “boazodoallo guovlu” | divvun-checker -s pipespec.xml -n smegram
+```
+
+The result should look like
+```
+{
+  'errs': 
+    [
+        [
+          'boazodoallo guovlu',
+          0, //beg offset
+          18, // end offset
+          'Msyn-compound', // internal error type
+          '"boazodoallo guovlu" orru leamen goallossátni', // human-readable explanation
+          ['boazodoalloguovlu'], // possible suggestion
+          'Goallosteapmi'
+        ]
+    ],
+   'text': 'boazodoallo guovlu'
+}
+```
+The array-of-arrays errs has one array per error. Within each error-array, beg/end are offsets in text, typ is the (internal) error type, exp is the human-readable explanation, and each rep is a possible suggestion for replacement of the text between beg/end in text.
+
+The index beg is inclusive, end exclusive, and both indices are based on a UTF-16 encoding (which is what JavaScript uses, so e.g. the emoji “norway” will increase the index of the following errors by 4).
+
 
 Setup virtualenv, dependencies
 ```
@@ -80,7 +124,7 @@ Property `params` (optional) contains {"pipe": "valid_pipe"} where `valid_pipe` 
 - smegramrelease : Spelling and grammar error
 - smegram : Spelling and grammar error with a after-speller-disambiguator
 
-The value of property content should be in range [2:4095] characters in length. The number 4095 was selected based on empirical experiments on the maximum sentence length the pipeline can handle.  
+The value of property content should be in range [2:4095] characters in length. The number 4095 was selected based on empirical experiments on the maximum sentence length the pipeline can handle. In addition, the content should not contain any extra whitespaces or control characters or newlines since this can cause unexpected offset mismatches. In that case, ELG Failure response will be returned.
 
 
 #### RESPONSE
