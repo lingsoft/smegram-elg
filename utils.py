@@ -1,10 +1,13 @@
 import subprocess
 import json
 
-import unicodedata
+import logging
 
 from elg.model import TextsResponseObject
 from elg.model.base import Annotation
+
+log_format = '%(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(format=log_format)
 
 
 def runcmd(command):
@@ -15,15 +18,10 @@ def runcmd(command):
                          encoding="utf-8",
                          timeout=30)
     if ret.returncode == 0:
-        print("success:")
+        logging.info("success in calling the se CLI")
     else:
-        print("error:")
+        logging.error("Something wrong!")
     return ret
-
-
-# Remove control characters from a string:
-def remove_control_characters(s):
-    return "".join(ch for ch in s if unicodedata.category(ch)[0] != "C")
 
 
 def gmr_func_elg(text, pipe):
@@ -31,18 +29,15 @@ def gmr_func_elg(text, pipe):
     :param text: str
     :return
     """
-    text = remove_control_characters(
-        text.replace("\r", "").replace("\n", " ").replace("\t", " ").replace(
-            "\u2028", " ").replace("\u2029", " "))
+
     res_str = runcmd("echo \"%s\" \
                     | divvun-checker -s se/pipespec.xml -n %s" %
                      (text, pipe)).stdout
-    # print('original res_str', res_str)
+
     if not res_str:
         raise Exception('Internal error')
 
     res = json.loads(res_str)
-    # print('res from native util', res)
     content = res['text']
     errs = res['errs']
     annos = []

@@ -8,6 +8,8 @@ class TestResponse(unittest.TestCase):
     base_url = 'http://localhost:8000/process'
 
     base_text = ["boazodoallo guovlu"]
+    MAX_CHAR = 4095
+    CONTROL_CHARS = ['\r', '\n', '\t', '\u2028', '\u2029']
 
     pipes = ["smegramrelease", "smegram"]
     params = {"pipe": pipes[1]}
@@ -100,12 +102,12 @@ class TestResponse(unittest.TestCase):
         """
 
         large_text = '. '.join(self.base_text * 230)
-        assert len(large_text) > 4095, 'text is not large enough'
+        assert len(large_text) > self.MAX_CHAR, 'text is not large enough'
 
         payload_dict = {
             "type": "text",
             "params": self.params,
-            "content": large_text[:4095]
+            "content": large_text[:self.MAX_CHAR]
         }
         payload = json.dumps(payload_dict)
         response = requests.post(self.base_url,
@@ -171,27 +173,44 @@ class TestResponse(unittest.TestCase):
         self.assertEqual(response['failure']['errors'][0]['code'],
                          'elg.request.invalid')
 
-    def test_api_response_when_content_has_newlines(self):
-        """API should work even when there are
-        many newlines and special characters
-        in the content
+    def test_api_response_when_content_has_ctrl_char(self):
+        """API should return failture when there is
+        control characters in the content
         """
 
-        content = self.base_text[0] + '\n\n?+-\n\nhello\n'
+        for chr in self.CONTROL_CHARS:
+
+            content = self.base_text[0] + chr
+            payload_dict = {"type": "text", "content": content}
+            payload = json.dumps(payload_dict)
+            response = requests.post(self.base_url,
+                                     headers=self.headers,
+                                     data=payload).json()
+
+            self.assertIn('failure', response)
+            self.assertEqual(response['failure']['errors'][0]['code'],
+                             'elg.request.invalid')
+            self.assertEqual(
+                response['failure']['errors'][0]['detail']['text'],
+                'There is control character in the content')
+
+    def test_api_response_when_content_has_extra_white_space(self):
+        """API should return failture when there is
+        extra white spaces in the content
+        """
+
+        content = self.base_text[0][:10] + '  ' + self.base_text[0][10:]
         payload_dict = {"type": "text", "content": content}
         payload = json.dumps(payload_dict)
         response = requests.post(self.base_url,
                                  headers=self.headers,
-                                 data=payload).json()['response']['texts'][0]
+                                 data=payload).json()
 
-        self.assertIn('errs', response['annotations'])
-
-        for _ in ['start', 'end', 'features']:
-            self.assertIn(_, response['annotations']['errs'][0])
-
-        for prop in ['original', 'type', 'explanation', 'suggestion']:
-
-            self.assertIn(prop, response['annotations']['errs'][0]['features'])
+        self.assertIn('failure', response)
+        self.assertEqual(response['failure']['errors'][0]['code'],
+                         'elg.request.invalid')
+        self.assertEqual(response['failure']['errors'][0]['detail']['text'],
+                         'There is too many white space in the content')
 
 
 if __name__ == '__main__':

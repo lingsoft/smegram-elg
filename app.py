@@ -10,8 +10,9 @@ import re
 class SamiChecker(FlaskService):
 
     available_pipes = ['smegramrelease', 'smegram']
-    max_char = 4095
-    min_char = 2
+    MAX_CHAR = 4095
+    MIN_CHAR = 2
+    CONTROL_CHARS = ['\r', '\n', '\t', '\u2028', '\u2029']
 
     def check_params(self, request):
         params = request.params
@@ -26,20 +27,29 @@ class SamiChecker(FlaskService):
         return pipe
 
     def check_text(self, text):
-        if len(text) < self.min_char:
+        if len(text) < self.MIN_CHAR:
             tooShortMessage = StandardMessages.generate_elg_request_invalid(
                 detail={'text': 'lower limit is 2 characters in length'})
             return False, Failure(errors=[tooShortMessage])
-        elif len(text) > self.max_char:
+        elif len(text) > self.MAX_CHAR:
             tooLargeMessage = StandardMessages.generate_elg_request_too_large()
             return False, Failure(errors=[tooLargeMessage])
+        elif any(c in self.CONTROL_CHARS for c in text):
+            inputHasControlCharMessage = StandardMessages.generate_elg_request_invalid(
+                detail={'text': 'There is control character in the content'})
+            return False, Failure(errors=[inputHasControlCharMessage])
+        elif re.search(r'(\s\s+)', text):
+            inputHasExtraWhiteSpaceMessage = StandardMessages.generate_elg_request_invalid(
+                detail={
+                    'text': 'There is too many white space in the content'
+                })
+            return False, Failure(errors=[inputHasExtraWhiteSpaceMessage])
         else:
             return True, text
 
     def process_text(self, request: TextRequest):
 
-        text = request.content.strip()
-        text = re.sub(r'(\n\s*)+\n+', '\n', text)
+        text = request.content
         text_ok, text_check_res = self.check_text(text)
         if not text_ok:
             return text_check_res
