@@ -21,7 +21,7 @@ WORKDIR /home
 RUN svn checkout https://github.com/giellalt/lang-sme.git/trunk lang-sme
 
 RUN cd lang-sme && \
-    ./autogen.sh &&     
+    ./autogen.sh
 
 RUN cd giella-shared && \
     ./autogen.sh && \
