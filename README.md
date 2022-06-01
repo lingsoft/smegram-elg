@@ -175,29 +175,24 @@ The array-of-arrays `errs` has one array per error. Within each error array:
 
 ```
 {
-  "response":{
-    "type":"texts",
-    "texts":[
-      {
-        "content":"boazodoallo guovlu",
-        "annotations":{
-          "errs":[
-            {
-              "start":0,
-              "end":18,
-              "features":{
-                "original":"boazodoallo guovlu",
-                "type":"msyn-compound",
-                "explanation":"\"boazodoallo guovlu\" orru leamen goalloss\u00e1tni",
-                "suggestion":[
-                  "boazodoalloguovlu"
-                ]
-              }
-            }
-          ]
+  "response": {
+    "type": "annotations",
+    "annotations": {
+      "errs": [
+        {
+          "start": 0,
+          "end": 18,
+          "features": {
+            "original": "boazodoallo guovlu",
+            "type": "msyn-compound",
+            "explanation": "\"boazodoallo guovlu\" orru leamen goalloss\u00e1tni",
+            "suggestion": [
+              "boazodoalloguovlu"
+            ]
+          }
         }
-      }
-    ]
+      ]
+    }
   }
 }
 ```
