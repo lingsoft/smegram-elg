@@ -27,6 +27,7 @@ class SamiChecker(FlaskService):
         return pipe
 
     def check_text(self, text):
+        text = text.strip()
         if len(text) < self.MIN_CHAR:
             tooShortMessage = StandardMessages.generate_elg_request_invalid(
                 detail={'text': 'lower limit is 2 characters in length'})
@@ -71,7 +72,7 @@ class SamiChecker(FlaskService):
             error = StandardMessages.generate_elg_service_internalerror(
                 params=[str(err)])
             return Failure(errors=[error])
-        return TextsResponse(texts=[res])
+        return res
 
 
 flask_service = SamiChecker("sami-grm-checker")

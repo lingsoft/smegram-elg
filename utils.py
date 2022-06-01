@@ -3,7 +3,7 @@ import json
 
 import logging
 
-from elg.model import TextsResponseObject
+from elg.model import AnnotationsResponse
 from elg.model.base import Annotation
 
 log_format = '%(name)s - %(levelname)s - %(message)s'
@@ -27,7 +27,7 @@ def runcmd(command):
 def gmr_func_elg(text, pipe):
     """
     :param text: str
-    :return
+    :return ELG AnnotationsResponse
     """
 
     res_str = runcmd("echo \"%s\" \
@@ -39,6 +39,8 @@ def gmr_func_elg(text, pipe):
 
     res = json.loads(res_str)
     content = res['text']
+    if text != content:
+        raise Exception('Original text and return content are difference')
     errs = res['errs']
     annos = []
     for e in errs:
@@ -51,4 +53,4 @@ def gmr_func_elg(text, pipe):
                            "explanation": e[4],
                            "suggestion": e[5]
                        }))
-    return TextsResponseObject(content=content, annotations={"errs": annos})
+    return AnnotationsResponse(annotations={"errs": annos})
