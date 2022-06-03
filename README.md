@@ -129,36 +129,33 @@ The value of property content should be in range [2:4095] characters in length. 
 
 #### RESPONSE
 
-Text response
+Annotation response
 ```
 {
-  "response":{
-    "type":"texts",
-    "texts":[
-              {
-                "content": "string of the requested text",
-                "annotations": {
-                  "errs": [
-                      {
-                        "original": "string of original words",
-                        "start": start offset,
-                        "end": end offset,
-                        "type": error type,
-                        "explanation": "string of explanation",
-                        "suggestions": List[string of suggestion] 
-                      },
-                  ] 
-                }
-                     
-              },
-          ]
+  "response": {
+    "type": "annotations",
+    "annotations": {
+      "errs": [
+        {
+          "features": {
+            "original": "string of original words",
+            "start": start offset,
+            "end": end offset,
+            "type": "msyn-compound",
+            "explanation": "string of explanation",
+            "suggestion": List[string of suggestion
+            ]
+          }
+        }
+      ]
+    }
   }
 }
 ```
 
 ### Response structure
 
-The array-of-arrays `errs` has one array per error. Within each error array:
+The array-of-object `errs` has one object per error. Each object contains `features key`, which includes:
 - `original` is the original text that is detected
 - `start`/`end` are offsets in text
 - `type` is the (internal) error type
