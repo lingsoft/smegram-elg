@@ -1,6 +1,6 @@
 from elg import FlaskService
 from elg.model import Failure
-from elg.model import TextsResponse, TextRequest
+from elg.model import TextRequest
 from elg.model.base import StandardMessages
 
 import utils
