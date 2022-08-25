@@ -1,10 +1,11 @@
 import subprocess
 import json
-
 import logging
+# import difflib
 
 from elg.model import AnnotationsResponse
 from elg.model.base import Annotation
+from elg.model.base import StatusMessage
 
 log_format = '%(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(format=log_format)
@@ -20,28 +21,32 @@ def runcmd(command):
     if ret.returncode == 0:
         logging.info("success in calling the se CLI")
     else:
-        logging.error("Something wrong!")
+        logging.error("Subprocess returncode %s", ret.returncode)
     return ret
 
 
 def gmr_func_elg(text, pipe):
-    """
-    :param text: str
-    :return ELG AnnotationsResponse
-    """
 
     res_str = runcmd("echo \"%s\" \
                     | divvun-checker -s se/pipespec.xml -n %s" %
                      (text, pipe)).stdout
 
     if not res_str:
-        raise Exception('Internal error')
+        raise Exception("Subprocess returned nothing")
 
     res = json.loads(res_str)
     content = res['text']
+    warning = None
     if text != content:
-        raise Exception('Original text and return content are difference')
-    errs = res['errs']
+        # diffs = [c for c in difflib.ndiff(text, content) if c[0] != ' ']
+        logging.warning("Origin: %s, returned: %s", len(text), len(content))
+        # logging.warning("Differences: %s", diffs)
+        warning = StatusMessage(
+            code="lingsoft.texts.mismatch",
+            params=[],
+            text="Original text and return content are difference")
+
+    errs = res["errs"]
     annos = []
     for e in errs:
         annos.append(
@@ -53,4 +58,7 @@ def gmr_func_elg(text, pipe):
                            "explanation": e[4],
                            "suggestion": e[5]
                        }))
-    return AnnotationsResponse(annotations={"errs": annos})
+    resp = AnnotationsResponse(annotations={"errs": annos})
+    if warning:
+        resp.warnings = [warning]
+    return resp
