@@ -1,0 +1,3 @@
+[submodule "libdivvun"]
+	path = libdivvun
+	url = https://github.com/divvun/libdivvun.git
