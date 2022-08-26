@@ -41,11 +41,11 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(len(response["response"]["annotations"]["errs"]), 0)
 
     def test_api_response_with_whitespace_text(self):
+        # Issue is newline character in echo
         payload = create_payload("  \t  \n\n  ")
         response = call_api(payload)
         print(response)
-        self.assertEqual(response["failure"]["errors"][0]["code"],
-                         "elg.request.invalid")
+        self.assertEqual(len(response["response"]["annotations"]["errs"]), 0)
 
     def test_api_response_with_too_long_text(self):
         # With Python binding 3750?
