@@ -23,7 +23,7 @@ class TestIntegration(unittest.TestCase):
         # Wiechetek et al. (2019). Many shades of grammar checking
         # https://ep.liu.se/ecp/168/008/ecp19168008.pdf
         self.text = "Oktiibuot 13 Norgag doaktára leat leamaš mielde dáin iskkadan bargguin ."
-        self.bokte_text = "sáddejuvvot báhpirat interneahta badjel."
+        self.compound_text = "boazodoallo guovlu"
 
     def test_api_response_type(self):
         payload = create_payload(self.text)
@@ -31,7 +31,7 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(response["response"]["type"], "annotations")
 
     def test_api_response_content(self):
-        payload = create_payload(self.bokte_text)
+        payload = create_payload(self.compound_text)
         response = call_api(payload)
         self.assertGreater(len(response["response"]["annotations"]["errs"]), 0)
 
@@ -48,8 +48,7 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(len(response["response"]["annotations"]["errs"]), 0)
 
     def test_api_response_with_too_long_text(self):
-        # With Python binding 3750?
-        n_sents = int(4095 / (len(self.text) + 1)) + 1
+        n_sents = int(3750 / (len(self.text) + 1)) + 1
         long_text = (" ".join([self.text] * n_sents))
         payload = create_payload(long_text)
         response = call_api(payload)
@@ -63,7 +62,7 @@ class TestIntegration(unittest.TestCase):
         self.assertGreater(len(response["response"]["annotations"]["errs"]), 0)
 
     def test_api_response_with_special_characters(self):
-        spec_text = "\N{grinning face}" + self.bokte_text
+        spec_text = "\N{grinning face}" + self.compound_text
         payload = create_payload(spec_text)
         response = call_api(payload)
         print(response)
