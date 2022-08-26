@@ -24,7 +24,7 @@ RUN cd libdivvun && \
     make && \
     make install
 
-# apt-get install tini
+RUN apt-get update && apt-get -y install tini && chmod +x /usr/bin/tini
 WORKDIR /elg
 COPY requirements.txt /elg/
 RUN pip install --no-cache-dir -r requirements.txt && \
@@ -32,7 +32,7 @@ RUN pip install --no-cache-dir -r requirements.txt && \
     adduser --disabled-password --gecos "ELG User,,," --home /elg --ingroup elg --uid 1001 elg
 USER elg:elg
 
-COPY --chown=elg:elg app.py archives/se.zcheck docker-entrypoint.sh utils.py /elg/
+COPY --chown=elg:elg app.py archives/se.zcheck docker-entrypoint.sh /elg/
 
 #ENV PATH="/opt/venv/bin:$PATH"
 ENV WORKERS=2
@@ -41,5 +41,5 @@ ENV WORKER_CLASS=sync
 ENV LOGURU_LEVEL=INFO
 #ENV PYTHON_PATH="/opt/venv/bin"
 
-#RUN chmod +x /elg/docker-entrypoint.sh
-#ENTRYPOINT ["/elg/docker-entrypoint.sh"]
+RUN chmod +x /elg/docker-entrypoint.sh
+ENTRYPOINT ["/elg/docker-entrypoint.sh"]
