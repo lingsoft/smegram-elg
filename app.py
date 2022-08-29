@@ -4,7 +4,7 @@ from elg.model import TextRequest
 from elg.model import AnnotationsResponse
 from elg.model.base import Annotation
 from elg.model.base import StandardMessages
-# from elg.model.base import StatusMessage
+from elg.model.base import StatusMessage
 
 import libdivvun
 
@@ -36,7 +36,16 @@ class SamiChecker(FlaskService):
                                 "explanation": e.msg,
                                 "suggestion": list(e.rep)
                             }))
-            return AnnotationsResponse(annotations={"errs": annos})
+            resp = AnnotationsResponse(annotations={"errs": annos})
+            warning = None
+            if any(ord(ch) > 0xffff for ch in text):
+                warning = StatusMessage(
+                    code="lingsoft.request.character.unsupported",
+                    params=[],
+                    text="Standoffs may fail because text contains characters from supplementary planes")
+            if warning:
+                resp.warnings = [warning]
+            return resp
         except Exception as err:
             error = StandardMessages.generate_elg_service_internalerror(
                 params=[str(err)])
