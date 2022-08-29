@@ -24,17 +24,20 @@ class SamiChecker(FlaskService):
             error = StandardMessages.generate_elg_request_too_large()
             return Failure(errors=[error])
         try:
-            errors = libdivvun.proc_errs_bytes(smegram, text)
+            line_begin = 0
             annotations = {}
-            for e in errors:
-                features={
-                        "explanation": e.msg,
-                        "suggestion": list(e.rep)}
-                annotation = {
-                        "start": e.beg,
-                        "end": e.end,
-                        "features": features}
-                annotations.setdefault(e.err, []).append(annotation)
+            for line in text.splitlines():
+                errors = libdivvun.proc_errs_bytes(smegram, line)
+                for e in errors:
+                    features={
+                            "explanation": e.msg,
+                            "suggestion": list(e.rep)}
+                    annotation = {
+                            "start": line_begin + e.beg,
+                            "end": line_begin + e.end,
+                            "features": features}
+                    annotations.setdefault(e.err, []).append(annotation)
+                line_begin += len(line) + 1
             resp = AnnotationsResponse(annotations=annotations)
             warning = None
             if any(ord(ch) > 0xffff for ch in text):
