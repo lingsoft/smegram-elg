@@ -33,17 +33,21 @@ class TestIntegration(unittest.TestCase):
     def test_api_response_content(self):
         payload = create_payload(self.compound_text)
         response = call_api(payload)
-        self.assertGreater(len(response["response"]["annotations"]["errs"]), 0)
+        self.assertIn("msyn-compound", response["response"]["annotations"])
 
     def test_api_response_with_empty_text(self):
         payload = create_payload("")
         response = call_api(payload)
-        self.assertEqual(len(response["response"]["annotations"]["errs"]), 0)
+        self.assertIn("annotations", response["response"])
 
-    def test_api_response_with_whitespace_text(self):
-        payload = create_payload("  \t  \n\n  ")
+    def test_api_response_with_newline_text(self):
+        text = self.compound_text + "\n" + self.compound_text + "\n" + self.compound_text
+        payload = create_payload(text)
         response = call_api(payload)
-        self.assertEqual(len(response["response"]["annotations"]["errs"]), 0)
+        print(text)
+        print(response)
+        third_line = response["response"]["annotations"]["msyn-compound"][2]
+        self.assertEqual(third_line["start"], 38)
 
     def test_api_response_with_too_long_text(self):
         n_sents = int(3750 / (len(self.text) + 1)) + 1
@@ -57,19 +61,19 @@ class TestIntegration(unittest.TestCase):
         long_token = "å" * 1000
         payload = create_payload(long_token)
         response = call_api(payload)
-        self.assertGreater(len(response["response"]["annotations"]["errs"]), 0)
+        self.assertIn("typo", response["response"]["annotations"])
 
-    def test_api_response_with_special_characters(self):
+    def test_api_response_with_unsupported_characters(self):
         spec_text = "\N{grinning face}" + self.compound_text
         payload = create_payload(spec_text)
         response = call_api(payload)
         self.assertGreater(len(response["response"]["warnings"]), 0)
 
-    def test_api_response_with_unsupported_language(self):
+    def test_api_response_with_wrong_language(self):
         wrong_lang = "使用人口について正確な統計はないが、日本国内の人口、"
         payload = create_payload(wrong_lang)
         response = call_api(payload)
-        self.assertIn("errs", response["response"]["annotations"])
+        self.assertIn("annotations", response["response"])
 
 
 if __name__ == '__main__':
