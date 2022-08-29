@@ -41,10 +41,8 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(len(response["response"]["annotations"]["errs"]), 0)
 
     def test_api_response_with_whitespace_text(self):
-        # Issue is newline character in echo
         payload = create_payload("  \t  \n\n  ")
         response = call_api(payload)
-        print(response)
         self.assertEqual(len(response["response"]["annotations"]["errs"]), 0)
 
     def test_api_response_with_too_long_text(self):
@@ -65,8 +63,7 @@ class TestIntegration(unittest.TestCase):
         spec_text = "\N{grinning face}" + self.compound_text
         payload = create_payload(spec_text)
         response = call_api(payload)
-        print(response)
-        self.assertGreater(len(response["response"]["annotations"]["errs"]), 0)
+        self.assertGreater(len(response["response"]["warnings"]), 0)
 
     def test_api_response_with_unsupported_language(self):
         wrong_lang = "使用人口について正確な統計はないが、日本国内の人口、"
