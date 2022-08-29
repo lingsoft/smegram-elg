@@ -25,18 +25,17 @@ class SamiChecker(FlaskService):
             return Failure(errors=[error])
         try:
             errors = libdivvun.proc_errs_bytes(smegram, text)
-            annos = []
+            annotations = {}
             for e in errors:
-                annos.append(
-                    Annotation(start=e.beg,
-                            end=e.end,
-                            features={
-                                "original": e.form,
-                                "type": e.err,
-                                "explanation": e.msg,
-                                "suggestion": list(e.rep)
-                            }))
-            resp = AnnotationsResponse(annotations={"errs": annos})
+                features={
+                        "explanation": e.msg,
+                        "suggestion": list(e.rep)}
+                annotation = {
+                        "start": e.beg,
+                        "end": e.end,
+                        "features": features}
+                annotations.setdefault(e.err, []).append(annotation)
+            resp = AnnotationsResponse(annotations=annotations)
             warning = None
             if any(ord(ch) > 0xffff for ch in text):
                 warning = StatusMessage(
