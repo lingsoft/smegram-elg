@@ -44,8 +44,6 @@ class TestIntegration(unittest.TestCase):
         text = self.compound_text + "\n" + self.compound_text + "\n" + self.compound_text
         payload = create_payload(text)
         response = call_api(payload)
-        print(text)
-        print(response)
         third_line = response["response"]["annotations"]["msyn-compound"][2]
         self.assertEqual(third_line["start"], 38)
 
