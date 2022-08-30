@@ -44,7 +44,7 @@ class SamiChecker(FlaskService):
                 warning = StatusMessage(
                     code="lingsoft.request.character.unsupported",
                     params=[],
-                    text="Standoffs may fail because text contains characters from supplementary planes")
+                    text="Characters from supplementary planes may mess offsets")
             if warning:
                 resp.warnings = [warning]
             return resp
