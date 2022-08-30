@@ -33,7 +33,7 @@ the Study of Endangered Languages Volume 1 (Papers) (pp. 46-55).
 This ELG API was developed in EU's CEF project:
 [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
 
-## Local development
+## Development
 
 ### Language files
 
@@ -52,53 +52,11 @@ docker run -it -d lang-sme bash
 docker cp lang-sme:/home/lang-sme/tools/grammarcheckers/se.zcheck
 ```
 
-TODO: REMOVE?
->>>>
-The command-line tool is located inside the directory `se` and instant
-test can be done likes
-
-```
-cd se
-echo “boazodoallo guovlu” | divvun-checker -s pipespec.xml -n smegram
-```
-
-The result should look like
-
-```
-{
-  'errs': 
-    [
-        [
-          'boazodoallo guovlu',
-          0,
-          18,
-          'Msyn-compound',
-          '"boazodoallo guovlu" orru leamen goallossátni',
-          ['boazodoalloguovlu'],
-          'Goallosteapmi'
-        ]
-    ],
-   'text': 'boazodoallo guovlu'
-}
-```
-
-The array-of-arrays has one array per error.
-Within each error-array, beg/end are offsets in text, typ is the (internal)
-error type, exp is the human-readable explanation, and each rep is a possible
-suggestion for replacement of the text between beg/end in text.
-
-The index beg is inclusive, end exclusive, and both indices are based on a
-UTF-16 encoding (which is what JavaScript uses, so e.g. the emoji “norway”
-will increase the index of the following errors by 4).
-<<<<
-
 #### Download speller and grammar archives
 
 Easiest way is to get https://github.com/divvun/divvun-ci-config
 and download the archives by following these
 [instructions](https://github.com/divvun/divvun-api/tree/main/deployment).
-
-TODO download script?
 
 ### Virtual environment
 
@@ -116,30 +74,32 @@ FLASK_ENV=development flask run --host 0.0.0.0 --port 8000
 ### Tests
 
 ```
-python3 -m unittest  -v
+python3 -m unittest -v
 ```
 
-## Building the docker image
+## Usage
+
+### Building the docker image
 
 ```
 docker build -t smegram-elg .
 ```
 
-Or pull directly ready-made image `docker pull lingsoft/smegram-elg:tagname`.
+Or pull directly ready-made image `docker pull lingsoft/gramdivvun:tagname`.
 
-## Deploying the service
+### Deploying the service
 
 ```
 docker run -p <port>:8000 --init smegram-elg
 ```
 
-## Example call
+### Example call
 
 ```
 curl -H 'Content-Type: application/json' -d @sample.json http://localhost:8000/process
 ```
 
-### sample.json
+#### sample.json
 
 ```json
 {
@@ -148,7 +108,7 @@ curl -H 'Content-Type: application/json' -d @sample.json http://localhost:8000/p
 }
 ```
 
-### Response
+#### Response
 
 ```json
 {
@@ -192,3 +152,14 @@ curl -H 'Content-Type: application/json' -d @sample.json http://localhost:8000/p
   }
 }
 ```
+
+### Local ELG GUI
+
+Use ELG-compatible service from GUI locally
+
+```
+cd elg_local && docker-compose up
+```
+
+The GUI is accessible on `http://localhost:5080`. See more
+[instructions](https://european-language-grid.readthedocs.io/en/stable/all/A1_PythonSDK/DeployServicesLocally.html#deploy-elg-compatible-service-from-its-docker-image).
