@@ -1,3 +1,6 @@
 [submodule "libdivvun"]
 	path = libdivvun
 	url = https://github.com/divvun/libdivvun.git
+[submodule "lang-sme"]
+	path = lang-sme
+	url = https://github.com/giellalt/lang-sme.git
