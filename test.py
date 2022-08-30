@@ -62,7 +62,7 @@ class TestIntegration(unittest.TestCase):
         self.assertIn("typo", response["response"]["annotations"])
 
     def test_api_response_with_unsupported_characters(self):
-        spec_text = "\N{grinning face}" + self.compound_text
+        spec_text = "\N{grinning face} " + self.compound_text
         payload = create_payload(spec_text)
         response = call_api(payload)
         self.assertGreater(len(response["response"]["warnings"]), 0)
