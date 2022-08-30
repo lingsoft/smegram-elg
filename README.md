@@ -1,14 +1,34 @@
-# ELG API for Sami grammar checker
+# ELG API for Northern Sami grammar checker
 
 This git repository contains
 [ELG compatible](https://european-language-grid.readthedocs.io/en/stable/all/A3_API/LTInternalAPI.html)
 Flask based REST API for the Sami grammar checker.
 
-[lang-sme](https://github.com/giellalt/lang-sme) contains finite state
-source files for the North Sami language, for building morphological
-analyzers, proofing tools, and dictionaries. It is published under GPL-3.0 License.
+## Authors
+
+### Original authors
+
+[lang-sme](https://github.com/giellalt/lang-sme) GPL-3.0 License.
+Finite state and Constraint Grammar based analysers and proofing tools,
+and language resources for the Northern Sami language.
 Original authors are from [GiellaLT](https://giellalt.uit.no).
-More info can be found in this [paper](https://ep.liu.se/ecp/168/008/ecp19168008.pdf)
+
+More info can be found from Wiechetek et al. (2019).
+[Many shades of grammar checking – Launching a Constraint Grammar tool for North Sámi](https://ep.liu.se/en/conference-article.aspx?series=ecp&issue=168&Article_No=8)
+
+[libdivvun](https://github.com/divvun/libdivvun)
+is a library for handling Finite-State Morphology and Constraint Grammar
+based NLP tools in GiellaLT. The tools are used for tokenisation,
+normalisation, grammar-checking and correction, and other NLP tasks.
+GPL-3.0 License.
+
+The architecture of systems using libdivvun is described in
+Wiechetek, L., Moshagen, S., & Unhammer, K. B. (2019, February).
+[Seeing more than whitespace—Tokenisation and disambiguation in a North Sámi grammar checker](https://aclanthology.org/W19-6007.pdf).
+In Proceedings of the 3rd Workshop on the Use of Computational Methods in
+the Study of Endangered Languages Volume 1 (Papers) (pp. 46-55).
+
+### ELG API
 
 This ELG API was developed in EU's CEF project:
 [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
@@ -28,17 +48,15 @@ docker build -f Dockerfile.build -t lang-sme .
 
 Then run the container and copy the zcheck file from the container
 ```
-docker run --name -it -d sme-src lang-sme
+docker run -it -d lang-sme bash
 docker cp lang-sme:/home/lang-sme/tools/grammarcheckers/se.zcheck
 ```
 
-#### Download pre-built files
+TODO: REMOVE?
+>>>>
+The command-line tool is located inside the directory `se` and instant
+test can be done likes
 
-TODO
-
-#### Command-line tool
-
-The tool is located inside the directory `se` and instant test can be done likes
 ```
 cd se
 echo “boazodoallo guovlu” | divvun-checker -s pipespec.xml -n smegram
@@ -46,7 +64,7 @@ echo “boazodoallo guovlu” | divvun-checker -s pipespec.xml -n smegram
 
 The result should look like
 
-```json
+```
 {
   'errs': 
     [
@@ -64,7 +82,7 @@ The result should look like
 }
 ```
 
-The array-of-arrays errs has one array per error.
+The array-of-arrays has one array per error.
 Within each error-array, beg/end are offsets in text, typ is the (internal)
 error type, exp is the human-readable explanation, and each rep is a possible
 suggestion for replacement of the text between beg/end in text.
@@ -72,13 +90,21 @@ suggestion for replacement of the text between beg/end in text.
 The index beg is inclusive, end exclusive, and both indices are based on a
 UTF-16 encoding (which is what JavaScript uses, so e.g. the emoji “norway”
 will increase the index of the following errors by 4).
+<<<<
+
+#### Download speller and grammar archives
+
+Easiest way is to get https://github.com/divvun/divvun-ci-config
+and download the archives by following these
+[instructions](https://github.com/divvun/divvun-api/tree/main/deployment).
+
+TODO download script?
 
 ### Virtual environment
 
-Setup virtualenv, dependencies
 ```
-python3 -m venv lang-sme-elg-venv
-source lang-sme-elg-venv/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
