@@ -121,6 +121,7 @@ curl -H 'Content-Type: application/json' -d @sample.json http://localhost:8000/p
           "end": 19,
           "features": {
             "explanation": "Čállinmeattáhus",
+            "description": "Ii leat sátnelisttus",
             "suggestion": [
               "Borga",
               "Čorgat",
@@ -142,6 +143,7 @@ curl -H 'Content-Type: application/json' -d @sample.json http://localhost:8000/p
           "end": 72,
           "features": {
             "explanation": "Sátnegaskameattáhus",
+            "description": "Lea gaska \".\" ovddas",
             "suggestion": [
               "iskkadan bargguin."
             ]

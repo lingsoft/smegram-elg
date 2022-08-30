@@ -31,6 +31,7 @@ class SamiChecker(FlaskService):
                 for e in errors:
                     features={
                             "explanation": e.msg,
+                            "description": e.dsc,
                             "suggestion": list(e.rep)}
                     annotation = {
                             "start": line_begin + e.beg,
