@@ -49,7 +49,7 @@ docker build -f Dockerfile.build -t lang-sme .
 Then run the container and copy the zcheck file from the container
 ```
 docker run -it -d lang-sme bash
-docker cp lang-sme:/home/lang-sme/tools/grammarcheckers/se.zcheck
+docker cp <container_name>:/home/lang-sme/tools/grammarcheckers/se.zcheck
 ```
 
 #### Download speller and grammar archives
@@ -57,6 +57,8 @@ docker cp lang-sme:/home/lang-sme/tools/grammarcheckers/se.zcheck
 Easiest way is to get https://github.com/divvun/divvun-ci-config
 and download the archives by following these
 [instructions](https://github.com/divvun/divvun-api/tree/main/deployment).
+
+(Or wget giella-sme-speller deb package and dpkg-deb -xv)
 
 ### Virtual environment
 
