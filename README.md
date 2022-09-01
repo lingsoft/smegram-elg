@@ -8,6 +8,8 @@ Flask based REST API for the Sami grammar checker.
 
 ### Original authors
 
+#### lang-sme
+
 [lang-sme](https://github.com/giellalt/lang-sme) GPL-3.0 License.
 Finite state and Constraint Grammar based analysers and proofing tools,
 and language resources for the Northern Sami language.
@@ -15,6 +17,8 @@ Original authors are from [GiellaLT](https://giellalt.uit.no).
 
 More info can be found from Wiechetek et al. (2019).
 [Many shades of grammar checking – Launching a Constraint Grammar tool for North Sámi](https://ep.liu.se/en/conference-article.aspx?series=ecp&issue=168&Article_No=8)
+
+#### libdivvun
 
 [libdivvun](https://github.com/divvun/libdivvun)
 is a library for handling Finite-State Morphology and Constraint Grammar
