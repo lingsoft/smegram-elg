@@ -40,7 +40,7 @@ This ELG API was developed in EU's CEF project:
 #### Build from source
 
 The grammar tool can be built from source as described in the `Dockerfile.build`.
-To run it, at least 8GB memory is required.
+To run it, at least 8GB memory is required. And some time.
 
 ```
 docker build -f Dockerfile.build -t lang-sme .
