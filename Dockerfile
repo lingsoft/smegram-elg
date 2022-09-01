@@ -34,12 +34,10 @@ USER elg:elg
 
 COPY --chown=elg:elg app.py archives/se.zcheck docker-entrypoint.sh /elg/
 
-#ENV PATH="/opt/venv/bin:$PATH"
 ENV WORKERS=2
 ENV TIMEOUT=30
 ENV WORKER_CLASS=sync
 ENV LOGURU_LEVEL=INFO
-#ENV PYTHON_PATH="/opt/venv/bin"
 
 RUN chmod +x /elg/docker-entrypoint.sh
 ENTRYPOINT ["/elg/docker-entrypoint.sh"]
